@@ -1,0 +1,40 @@
+{
+  "name": "tkesim",
+  "version": "1.0.0",
+  "description": "TUI Kafka Event Simulator - Genera e invia eventi Kafka con dati sintetici",
+  "type": "module",
+  "main": "src/index.tsx",
+  "bin": {
+    "tkesim": "./dist/index.js"
+  },
+  "scripts": {
+    "start": "npx tsx src/index.tsx",
+    "dev": "npx tsx --watch src/index.tsx",
+    "build": "npx tsup src/index.tsx --format esm --clean --banner:js \"#!/usr/bin/env node\""
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.0",
+    "ink": "^5.0.1",
+    "ink-select-input": "^6.0.0",
+    "ink-spinner": "^5.0.0",
+    "ink-text-input": "^6.0.0",
+    "kafkajs": "^2.2.4",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@types/react": "^18.2.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0"
+  },
+  "keywords": [
+    "tui",
+    "kafka",
+    "simulator",
+    "events",
+    "synthetic-data",
+    "ink"
+  ],
+  "license": "MIT"
+}
