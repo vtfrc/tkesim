@@ -17,13 +17,15 @@ fi
 
 # 2. Clone/Update Repository
 if [ -d "$INSTALL_DIR" ]; then
-  echo -e "\033[0;33mUpdating existing installation in $INSTALL_DIR...\033[0m"
-  cd "$INSTALL_DIR"
-  git pull
+    echo -e "\033[0;33mUpdating existing installation in $INSTALL_DIR...\033[0m"
+    cd "$INSTALL_DIR"
+    # Reset local changes (like package-lock.json) to avoid merge conflicts
+    git fetch --all
+    git reset --hard origin/master || git reset --hard origin/main
 else
-  echo -e "\033[0;33mCloning repository to $INSTALL_DIR...\033[0m"
-  git clone "$REPO_URL" "$INSTALL_DIR"
-  cd "$INSTALL_DIR"
+    echo -e "\033[0;33mCloning repository to $INSTALL_DIR...\033[0m"
+    git clone "$REPO_URL" "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
 fi
 
 # 3. Install Dependencies & Build
