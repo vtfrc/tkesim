@@ -10,7 +10,7 @@
   "scripts": {
     "start": "npx tsx src/index.tsx",
     "dev": "npx tsx --watch src/index.tsx",
-    "build": "npx tsup src/index.tsx --format esm --clean --banner:js \"#!/usr/bin/env node\""
+    "build": "tsup"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.0",
