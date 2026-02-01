@@ -55,18 +55,18 @@ const MainMenu = ({
   onSelect: (action: string) => void
 }) => {
   const items = [
-    { label: `${isConnected ? "●" : "○"} Configura Kafka${isConnected ? " (Connesso)" : ""}`, value: "config" },
-    { label: "◆ Seleziona Template Evento", value: "template" },
-    { label: "◇ Evento Custom (JSON)", value: "custom" },
-    { label: "📎 Incolla da Log", value: "paste" },
-    { label: "▶ Configura e Invia", value: "generate" },
-    { label: "📋 Log Eventi Inviati", value: "log" },
-    { label: "✕ Esci", value: "exit" },
+    { label: `${isConnected ? "●" : "○"} Configure Kafka${isConnected ? " (Connected)" : ""}`, value: "config" },
+    { label: "◆ Select Event Template", value: "template" },
+    { label: "◇ Custom Event (JSON)", value: "custom" },
+    { label: "📎 Paste from Log", value: "paste" },
+    { label: "▶ Configure and Send", value: "generate" },
+    { label: "📋 Sent Events Log", value: "log" },
+    { label: "✕ Exit", value: "exit" },
   ]
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Menu Principale</Text>
+      <Text color="yellow" bold>Main Menu</Text>
       <Text> </Text>
       <SelectInput items={items} onSelect={(item) => onSelect(item.value)} />
     </Box>
@@ -106,7 +106,7 @@ const ConfigScreen = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Configurazione Kafka</Text>
+      <Text color="yellow" bold>Kafka Configuration</Text>
       <Text> </Text>
 
       {fields.map((field, index) => (
@@ -138,16 +138,16 @@ const ConfigScreen = ({
           color={focusIndex === fields.length ? "green" : "white"}
           bold={focusIndex === fields.length}
         >
-          {focusIndex === fields.length ? "[ CONNETTI ]" : "  Connetti  "}
+          {focusIndex === fields.length ? "[ CONNECT ]" : "  Connect  "}
         </Text>
         {isConnecting && (
           <Text color="yellow">
-            {" "}<Spinner type="dots" /> Connessione...
+            {" "}<Spinner type="dots" /> Connecting...
           </Text>
         )}
       </Box>
 
-      {error && <Text color="red">Errore: {error}</Text>}
+      {error && <Text color="red">Error: {error}</Text>}
     </Box>
   )
 }
@@ -173,8 +173,8 @@ const TemplateScreen = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Seleziona Template Evento</Text>
-      <Text color="whiteBright">Scegli un template predefinito per eventi bancari</Text>
+      <Text color="yellow" bold>Select Event Template</Text>
+      <Text color="whiteBright">Choose a predefined template for banking events</Text>
       <Text> </Text>
       <SelectInput
         items={items}
@@ -185,7 +185,7 @@ const TemplateScreen = ({
       />
       {selectedTemplate && (
         <Box marginTop={1} flexDirection="column">
-          <Text color="cyan">Selezionato: {selectedTemplate.name}</Text>
+          <Text color="cyan">Selected: {selectedTemplate.name}</Text>
           <Text color="blueBright">Topic: {selectedTemplate.topic}</Text>
         </Box>
       )}
@@ -220,7 +220,7 @@ const CustomJsonScreen = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Evento Custom</Text>
+      <Text color="yellow" bold>Custom Event</Text>
       <Text color="whiteBright">Placeholder: {"{{uuid}}"}, {"{{iban}}"}, {"{{amount:10:1000}}"}, {"{{name}}"}, {"{{enum:A,B,C}}"}</Text>
       <Text> </Text>
 
@@ -249,14 +249,14 @@ const CustomJsonScreen = ({
               placeholder='{"id": "{{uuid}}", "amount": "{{amount:10:500}}"}'
             />
           ) : (
-            <Text color="blueBright">{customJson || "(inserisci JSON)"}</Text>
+            <Text color="blueBright">{customJson || "(enter JSON)"}</Text>
           )}
         </Box>
       </Box>
 
       <Box marginTop={1}>
         <Text color={focusIndex === 2 ? "green" : "white"} bold={focusIndex === 2}>
-          {focusIndex === 2 ? "[ CONFERMA ]" : "  Conferma  "}
+          {focusIndex === 2 ? "[ CONFIRM ]" : "  Confirm  "}
         </Text>
       </Box>
     </Box>
@@ -339,13 +339,13 @@ const PasteScreen = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Incolla Evento da Log</Text>
-      <Text color="whiteBright">Supporta: JSON puro, oppure formato log Kafka con Header/offset/key</Text>
+      <Text color="yellow" bold>Paste Event from Log</Text>
+      <Text color="whiteBright">Supports: pure JSON, or Kafka log format with Header/offset/key</Text>
       <Text> </Text>
 
       <Box flexDirection="column" marginBottom={1}>
         <Text color={isFocused("topic") ? "cyan" : "white"}>
-          {isFocused("topic") ? ">" : " "} Topic destinazione:
+          {isFocused("topic") ? ">" : " "} Destination topic:
         </Text>
         <Box marginLeft={3}>
           {isFocused("topic") ? (
@@ -358,7 +358,7 @@ const PasteScreen = ({
 
       <Box flexDirection="column" marginBottom={1}>
         <Text color={isFocused("log") ? "cyan" : "white"}>
-          {isFocused("log") ? ">" : " "} Log/JSON (incolla qui):
+          {isFocused("log") ? ">" : " "} Log/JSON (paste here):
         </Text>
         <Box marginLeft={3}>
           {isFocused("log") ? (
@@ -369,7 +369,7 @@ const PasteScreen = ({
             />
           ) : (
             <Text color={pastedLog ? "blueBright" : "gray"}>
-              {pastedLog ? (pastedLog.length > 60 ? pastedLog.substring(0, 60) + "..." : pastedLog) : "(incolla log o JSON)"}
+              {pastedLog ? (pastedLog.length > 60 ? pastedLog.substring(0, 60) + "..." : pastedLog) : "(paste log or JSON)"}
             </Text>
           )}
         </Box>
@@ -378,13 +378,13 @@ const PasteScreen = ({
 
       {parsedLog && (
         <Box flexDirection="column" marginBottom={1} borderStyle="round" borderColor="gray" padding={1}>
-          <Text color="green" bold>✓ Parsing riuscito</Text>
+          <Text color="green" bold>✓ Parsing succeeded</Text>
           {parsedLog.key && <Text color="whiteBright">Key: <Text color="cyan">{parsedLog.key}</Text></Text>}
-          {parsedLog.offset && <Text color="whiteBright">Offset originale: <Text color="cyan">{parsedLog.offset}</Text></Text>}
+          {parsedLog.offset && <Text color="whiteBright">Original offset: <Text color="cyan">{parsedLog.offset}</Text></Text>}
           {hasHeaders && (
-            <Text color="whiteBright">Headers: <Text color="cyan">{headerCount} trovati</Text></Text>
+            <Text color="whiteBright">Headers: <Text color="cyan">{headerCount} found</Text></Text>
           )}
-          <Text color="whiteBright">Payload: <Text color="cyan">{Object.keys(parsedLog.payload).length} campi</Text></Text>
+          <Text color="whiteBright">Payload: <Text color="cyan">{Object.keys(parsedLog.payload).length} fields</Text></Text>
         </Box>
       )}
 
@@ -392,7 +392,7 @@ const PasteScreen = ({
         <Box flexDirection="column" marginBottom={1}>
           <Box marginLeft={2}>
             <Text color={isFocused("includeHeaders") ? "cyan" : "white"}>
-              {isFocused("includeHeaders") ? ">" : " "} {includeHeaders ? "[X]" : "[ ]"} Includi headers nell'invio ({headerCount})
+              {isFocused("includeHeaders") ? ">" : " "} {includeHeaders ? "[X]" : "[ ]"} Include headers in send ({headerCount})
             </Text>
           </Box>
         </Box>
@@ -400,7 +400,7 @@ const PasteScreen = ({
 
       {parsedLog && existingFields.length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
-          <Text color="whiteBright">Campi payload da rigenerare:</Text>
+          <Text color="whiteBright">Payload fields to regenerate:</Text>
           {existingFields.map((field) => {
             const itemKey = `regen_${field.key}`
             const isChecked = regenerateFields.has(field.key)
@@ -413,7 +413,7 @@ const PasteScreen = ({
               </Box>
             )
           })}
-          <Box marginLeft={3}><Text color="blueBright">Spazio per toggle</Text></Box>
+          <Box marginLeft={3}><Text color="blueBright">Space to toggle</Text></Box>
         </Box>
       )}
 
@@ -428,8 +428,8 @@ const PasteScreen = ({
           color={!isConnected ? "gray" : isFocused("send") ? "green" : "white"}
           bold={isFocused("send")}
         >
-          {isFocused("send") ? "[ INVIA EVENTO ]" : "  Invia Evento  "}
-          {!isConnected && " (non connesso)"}
+          {isFocused("send") ? "[ SEND EVENT ]" : "  Send Event  "}
+          {!isConnected && " (not connected)"}
         </Text>
       </Box>
     </Box>
@@ -469,13 +469,13 @@ const GenerateScreen = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Configura Generazione</Text>
+      <Text color="yellow" bold>Configure Generation</Text>
       <Text color="whiteBright">Topic: {topic}</Text>
       <Text> </Text>
 
       <Box flexDirection="column" marginBottom={1}>
         <Text color={focusIndex === 0 ? "cyan" : "white"}>
-          {focusIndex === 0 ? ">" : " "} Numero Eventi:
+          {focusIndex === 0 ? ">" : " "} Number of events:
         </Text>
         <Box marginLeft={3}>
           {focusIndex === 0 ? (
@@ -491,7 +491,7 @@ const GenerateScreen = ({
 
       <Box flexDirection="column" marginBottom={1}>
         <Text color={focusIndex === 1 ? "cyan" : "white"}>
-          {focusIndex === 1 ? ">" : " "} Delay tra eventi (ms):
+          {focusIndex === 1 ? ">" : " "} Delay between events (ms):
         </Text>
         <Box marginLeft={3}>
           {focusIndex === 1 ? (
@@ -513,8 +513,8 @@ const GenerateScreen = ({
           color={!isConnected ? "gray" : focusIndex === 3 ? "green" : "white"}
           bold={focusIndex === 3}
         >
-          {focusIndex === 3 ? "[ INVIA EVENTI ]" : "  Invia Eventi  "}
-          {!isConnected && " (non connesso)"}
+          {focusIndex === 3 ? "[ SEND EVENTS ]" : "  Send Events  "}
+          {!isConnected && " (not connected)"}
         </Text>
       </Box>
     </Box>
@@ -540,7 +540,7 @@ const PreviewScreen = ({
   return (
     <Box flexDirection="column">
       <Text color="yellow" bold>Preview Eventi ({page + 1}/{events.length})</Text>
-      <Text color="blueBright">← → per navigare, Esc per tornare</Text>
+      <Text color="blueBright">← → to navigate, Esc to go back</Text>
       <Text> </Text>
       <Box borderStyle="round" borderColor="cyan" padding={1}>
         <Text>{JSON.stringify(events[page], null, 2)}</Text>
@@ -561,11 +561,11 @@ const SendingScreen = ({
 }) => (
   <Box flexDirection="column">
     <Text color="yellow" bold>
-      <Spinner type="dots" /> Invio Eventi...
+      <Spinner type="dots" /> Sending Events...
     </Text>
     <Text> </Text>
     <Text color="cyan">
-      Progresso: {sent}/{total} ({Math.round((sent / total) * 100)}%)
+      Progress: {sent}/{total} ({Math.round((sent / total) * 100)}%)
     </Text>
     <Box marginTop={1}>
       <Text color="white">{"█".repeat(Math.round((sent / total) * 30))}</Text>
@@ -574,7 +574,7 @@ const SendingScreen = ({
     {lastEvent && (
       <Box marginTop={1}>
         <Text color={lastEvent.status === "sent" ? "green" : "red"}>
-          Ultimo: {lastEvent.status === "sent" ? "✓" : "✕"} partition:{lastEvent.partition} offset:{lastEvent.offset}
+          Last: {lastEvent.status === "sent" ? "✓" : "✕"} partition:{lastEvent.partition} offset:{lastEvent.offset}
         </Text>
       </Box>
     )}
@@ -597,10 +597,10 @@ const LogScreen = ({
 
   return (
     <Box flexDirection="column">
-      <Text color="yellow" bold>Log Eventi Inviati ({events.length} totali)</Text>
+      <Text color="yellow" bold>Sent Events Log ({events.length} total)</Text>
       <Text> </Text>
       {recentEvents.length === 0 ? (
-        <Text color="blueBright">Nessun evento inviato</Text>
+        <Text color="blueBright">No events sent</Text>
       ) : (
         recentEvents.map((event, i) => (
           <Text key={i} color={event.status === "sent" ? "green" : "red"}>
@@ -652,7 +652,7 @@ const App = () => {
         break
       case "generate":
         if (!selectedTemplate && !customJson) {
-          setError("Seleziona prima un template o inserisci JSON custom")
+          setError("First select a template or enter custom JSON")
           return
         }
         setStep("generate")
@@ -675,7 +675,7 @@ const App = () => {
     if (success) {
       setStep("menu")
     } else {
-      setError("Connessione fallita. Verifica broker e credenziali.")
+      setError("Connection failed. Verify broker and credentials.")
     }
   }, [kafkaConfig])
 
@@ -697,7 +697,7 @@ const App = () => {
 
   const handleSend = useCallback(async () => {
     if (!connected) {
-      setError("Non connesso a Kafka")
+      setError("Not connected to Kafka")
       return
     }
 
@@ -739,7 +739,7 @@ const App = () => {
       setPasteParseError(null)
     } else {
       setParsedLog(null)
-      setPasteParseError("Formato non riconosciuto (JSON o log Kafka)")
+      setPasteParseError("Unrecognized format (JSON or Kafka log)")
     }
   }, [])
 
@@ -788,7 +788,7 @@ const App = () => {
   // Send pasted event
   const handlePasteSend = useCallback(async () => {
     if (!connected || !parsedLog) {
-      setError("Non connesso o evento non valido")
+      setError("Not connected or invalid event")
       return
     }
 
@@ -894,13 +894,13 @@ const App = () => {
 
       {step === "log" && <LogScreen events={sentEvents} onBack={goToMenu} />}
 
-      {error && step === "menu" && <Text color="red">Errore: {error}</Text>}
+      {error && step === "menu" && <Text color="red">Error: {error}</Text>}
 
       <Footer
         hints={
           step === "menu"
-            ? "↑↓: Naviga | Invio: Seleziona"
-            : "Esc: Indietro | Tab/↓: Avanti | Invio: Conferma"
+            ? "↑↓: Navigate | Enter: Select"
+            : "Esc: Back | Tab/↓: Next | Enter: Confirm"
         }
       />
     </Box>

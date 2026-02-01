@@ -1,96 +1,96 @@
 # TKESIM - TUI Kafka Event Simulator
 
-Applicazione TUI per generare e inviare eventi Kafka con dati sintetici, pensata per testing di sistemi bancari.
+TUI application for generating and sending Kafka events with synthetic data, designed for banking system testing.
 
-## Funzionalità
+## Features
 
-- **Incolla da Log** - Copia un evento da log/produzione e invialo su Kafka locale:
-  - Incolla JSON direttamente
-  - Scegli quali campi rigenerare (eventId, timestamp, correlationId, ecc.)
-  - Preview prima dell'invio
-  - Utile per riprodurre scenari reali in ambiente di test
+- **Paste from Log** - Copy an event from log/production and send it to local Kafka:
+  - Paste JSON directly
+  - Choose which fields to regenerate (eventId, timestamp, correlationId, etc.)
+  - Preview before sending
+  - Useful for reproducing real scenarios in a test environment
 
-- **Template predefiniti** per eventi bancari comuni:
-  - Bonifico SEPA
-  - Pagamento POS
-  - Addebito SDD
-  - Notifiche push
+- **Predefined templates** for common banking events:
+  - SEPA Transfer
+  - POS Payment
+  - SDD Debit
+  - Push notifications
   - KYC Check
   - Login/Auth
 
-- **JSON Custom** con placeholder per dati dinamici:
+- **Custom JSON** with placeholders for dynamic data:
   - `{{uuid}}` - UUID v4
-  - `{{iban}}` - IBAN italiano
-  - `{{amount:min:max}}` - Importo casuale
-  - `{{name}}` - Nome completo
-  - `{{company}}` - Nome azienda
+  - `{{iban}}` - Italian IBAN
+  - `{{amount:min:max}}` - Random amount
+  - `{{name}}` - Full name
+  - `{{company}}` - Company name
   - `{{email}}` - Email
-  - `{{date}}` - Data ISO
-  - `{{enum:A,B,C}}` - Valore casuale da lista
+  - `{{date}}` - ISO date
+  - `{{enum:A,B,C}}` - Random value from list
 
-- **Configurazione flessibile**:
-  - Numero eventi da generare
-  - Delay tra invii
-  - Preview prima dell'invio
+- **Flexible configuration**:
+  - Number of events to generate
+  - Delay between sends
+  - Preview before sending
 
-- **Log real-time** degli eventi inviati
+- **Real-time log** of sent events
 
-## Requisiti
+## Requirements
 
 - Node.js >= 18
-- Kafka broker accessibile
+- Accessible Kafka broker
 
-## Installazione
+## Installation
 
 ```bash
 cd tkesim
 npm install
 ```
 
-## Avvio
+## Running
 
 ```bash
 npm start
 ```
 
-## Utilizzo
+## Usage
 
-### Modalità Template/Custom
-1. **Configura Kafka**: Inserisci broker, client ID e credenziali SASL (opzionali)
-2. **Seleziona Template** o **Crea JSON Custom**
-3. **Configura Generazione**: Numero eventi e delay
-4. **Preview**: Visualizza anteprima eventi generati
-5. **Invia**: Pubblica su Kafka con progress bar
+### Template/Custom Mode
+1. **Configure Kafka**: Enter broker, client ID, and SASL credentials (optional)
+2. **Select Template** or **Create Custom JSON**
+3. **Configure Generation**: Number of events and delay
+4. **Preview**: View generated event preview
+5. **Send**: Publish to Kafka with progress bar
 
-### Modalità Incolla da Log
-1. **Configura Kafka** e connettiti
-2. **Incolla da Log**: Copia un evento JSON da log/monitoring
-3. **Topic**: Specifica il topic locale di destinazione
-4. **Rigenera campi**: Seleziona quali campi rigenerare (eventId, timestamp, ecc.)
-5. **Preview/Invia**: Verifica e invia
+### Paste from Log Mode
+1. **Configure Kafka** and connect
+2. **Paste from Log**: Copy a JSON event from log/monitoring
+3. **Topic**: Specify the local destination topic
+4. **Regenerate fields**: Select which fields to regenerate (eventId, timestamp, etc.)
+5. **Preview/Send**: Verify and send
 
-Campi rigenerabili automaticamente:
-- `eventId` → nuovo UUID
-- `timestamp` → data/ora corrente
-- `correlationId` → nuovo UUID
-- `requestId` → nuovo UUID
-- `traceId` → nuovo UUID
-- `sessionId` → nuovo UUID
+Auto-regenerable fields:
+- `eventId` → new UUID
+- `timestamp` → current date/time
+- `correlationId` → new UUID
+- `requestId` → new UUID
+- `traceId` → new UUID
+- `sessionId` → new UUID
 
-## Controlli
+## Controls
 
-| Tasto | Azione |
-|-------|--------|
-| ↑ ↓ | Naviga menu/campi |
-| Tab | Campo successivo |
-| Invio | Conferma/Seleziona |
-| Esc | Torna indietro |
-| ← → | Naviga preview |
-| Ctrl+C | Esci |
+| Key | Action |
+|-----|--------|
+| ↑ ↓ | Navigate menu/fields |
+| Tab | Next field |
+| Enter | Confirm/Select |
+| Esc | Go back |
+| ← → | Navigate preview |
+| Ctrl+C | Exit |
 
-## Template Bancari Inclusi
+## Included Banking Templates
 
-### Bonifico SEPA
+### SEPA Transfer
 ```json
 {
   "eventId": "uuid",
@@ -103,7 +103,7 @@ Campi rigenerabili automaticamente:
 }
 ```
 
-### Pagamento POS
+### POS Payment
 ```json
 {
   "eventId": "uuid",
@@ -116,7 +116,7 @@ Campi rigenerabili automaticamente:
 }
 ```
 
-## Esempio JSON Custom
+## Custom JSON Example
 
 ```json
 {
@@ -129,6 +129,6 @@ Campi rigenerabili automaticamente:
 }
 ```
 
-## Licenza
+## License
 
 MIT

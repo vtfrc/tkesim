@@ -60,9 +60,9 @@ export interface AppState {
 // Predefined templates for banking events
 export const BANKING_TEMPLATES: EventTemplate[] = [
   {
-    id: "bonifico",
-    name: "Bonifico SEPA",
-    description: "Bonifico bancario SEPA standard",
+    id: "sepa-transfer",
+    name: "SEPA Transfer",
+    description: "Standard SEPA credit transfer",
     topic: "banking.payments.sepa-credit-transfer",
     schema: {
       eventId: { type: "uuid" },
@@ -80,9 +80,9 @@ export const BANKING_TEMPLATES: EventTemplate[] = [
     },
   },
   {
-    id: "pagamento-pos",
-    name: "Pagamento POS",
-    description: "Transazione carta su POS",
+    id: "pos-payment",
+    name: "POS Payment",
+    description: "Card transaction at POS",
     topic: "banking.payments.card-transaction",
     schema: {
       eventId: { type: "uuid" },
@@ -99,8 +99,8 @@ export const BANKING_TEMPLATES: EventTemplate[] = [
     },
   },
   {
-    id: "addebito-sdd",
-    name: "Addebito SDD",
+    id: "sdd-debit",
+    name: "SDD Debit",
     description: "SEPA Direct Debit",
     topic: "banking.payments.sepa-direct-debit",
     schema: {
@@ -119,9 +119,9 @@ export const BANKING_TEMPLATES: EventTemplate[] = [
     },
   },
   {
-    id: "notifica",
-    name: "Notifica Cliente",
-    description: "Push notification al cliente",
+    id: "notification",
+    name: "Customer Notification",
+    description: "Push notification to customer",
     topic: "banking.notifications.push",
     schema: {
       eventId: { type: "uuid" },
@@ -139,7 +139,7 @@ export const BANKING_TEMPLATES: EventTemplate[] = [
   {
     id: "kyc-check",
     name: "KYC Check",
-    description: "Verifica Know Your Customer",
+    description: "Know Your Customer verification",
     topic: "banking.compliance.kyc",
     schema: {
       eventId: { type: "uuid" },
@@ -155,8 +155,8 @@ export const BANKING_TEMPLATES: EventTemplate[] = [
   },
   {
     id: "login",
-    name: "Login Evento",
-    description: "Evento di autenticazione",
+    name: "Login Event",
+    description: "Authentication event",
     topic: "banking.security.auth",
     schema: {
       eventId: { type: "uuid" },

@@ -1,7 +1,7 @@
 {
   "name": "tkesim",
   "version": "1.0.0",
-  "description": "TUI Kafka Event Simulator - Genera e invia eventi Kafka con dati sintetici",
+  "description": "TUI Kafka Event Simulator - Generate and send Kafka events with synthetic data",
   "type": "module",
   "main": "src/index.tsx",
   "bin": {
