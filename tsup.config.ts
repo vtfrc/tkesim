@@ -4,7 +4,4 @@ export default defineConfig({
   entry: ['src/index.tsx'],
   format: ['esm'],
   clean: true,
-  banner: {
-    js: '#!/usr/bin/env node',
-  },
 })
