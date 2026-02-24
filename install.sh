@@ -4,48 +4,41 @@ set -e
 # TKESIM Quick Install
 # Usage: curl -fsSL https://raw.githubusercontent.com/vtfrc/tkesim/main/install.sh | sh
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-echo -e "${BLUE}"
 echo "╔════════════════════════════════════════════╗"
-echo "║         TKESIM - Kafka Event Simulator       ║"
+echo "║         TKESIM - Kafka Event Simulator     ║"
 echo "╚════════════════════════════════════════════╝"
-echo -e "${NC}"
 
-echo -e "${YELLOW}>>> Installing TKESIM...${NC}"
+echo ">>> Installing TKESIM..."
 
 # Check Node.js
 if ! command -v node &>/dev/null; then
-    echo -e "${RED}Error: Node.js >= 18 is required${NC}"
+    echo "Error: Node.js >= 18 is required"
     echo "Install from: https://nodejs.org/"
     exit 1
 fi
 
-NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
-if [ "$NODE_VERSION" -lt 18 ]; then
-    echo -e "${RED}Error: Node.js >= 18 required (found: $(node -v))${NC}"
+NODE_VERSION_NUM=$(node -v 2>/dev/null | grep -oE '[0-9]+' | head -1)
+if [ -z "$NODE_VERSION_NUM" ] || [ "$NODE_VERSION_NUM" -lt 18 ]; then
+    echo "Error: Node.js >= 18 required (found: $(node -v))"
     exit 1
 fi
+
+echo "Node.js $(node -v) detected. OK."
 
 # Create temp dir
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR"
 
-echo -e "${YELLOW}>>> Downloading TKESIM...${NC}"
+echo ">>> Downloading TKESIM..."
 git clone --depth 1 https://github.com/vtfrc/tkesim.git . 2>/dev/null || {
-    echo -e "${RED}Failed to clone repo${NC}"
+    echo "Failed to clone repo"
     exit 1
 }
 
-echo -e "${YELLOW}>>> Installing dependencies...${NC}"
+echo ">>> Installing dependencies..."
 npm ci 2>/dev/null || npm install
 
-echo -e "${YELLOW}>>> Building...${NC}"
+echo ">>> Building..."
 npm run build 2>/dev/null
 
 # Create wrapper script
@@ -69,31 +62,32 @@ cd /
 rm -rf "$TEMP_DIR"
 
 # Check PATH
-NEED_PATH=false
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     NEED_PATH=true
+else
+    NEED_PATH=false
 fi
 
-echo -e ""
-echo -e "${GREEN}✓ Installation complete!${NC}"
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}  TO START THE APP:${NC}"
+echo "✓ Installation complete!"
 echo ""
-if [ "$NE_PATH" = true ]; then
-    echo -e "  ${YELLOW}1. Add to PATH:${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  TO START THE APP:"
+echo ""
+if [ "$NEED_PATH" = true ]; then
+    echo "  1. Add to PATH:"
     echo "     export PATH=\"\$HOME/.local/bin:\$PATH\""
     echo ""
 fi
-echo "  ${YELLOW}2. Run TKESIM:${NC}"
-echo "     ${GREEN}tkesim${NC}"
+echo "  2. Run TKESIM:"
+echo "     tkesim"
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}  FOR LOCAL KAFKA (optional):${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  FOR LOCAL KAFKA (optional):"
 echo ""
-echo "  ${YELLOW}3. Start local Kafka:${NC}"
+echo "  3. Start local Kafka:"
 echo "     cd ~/.tkesim && docker compose up -d"
 echo ""
-echo "  ${YELLOW}4. In TKESIM, go to: Setup Local Kafka → Connect${NC}"
+echo "  4. In TKESIM: Setup Local Kafka → Connect"
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
