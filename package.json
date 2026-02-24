@@ -14,7 +14,6 @@
     "test": "vitest run",
     "setup": "docker compose up -d && echo 'Kafka started. Now run: npm start'"
   },
-  "postinstall": "npm run build 2>/dev/null || echo 'Build failed, but you can still run: npm start'"
   "dependencies": {
     "@faker-js/faker": "^8.4.0",
     "ink": "^5.0.1",
