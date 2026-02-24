@@ -1,10 +1,10 @@
 export interface ParsedKafkaLog {
-  timestamp: number | null
-  headers: Record<string, string>
-  partition: number | null
-  offset: number | null
-  key: string | null
-  payload: Record<string, unknown>
+	timestamp: number | null
+	headers: Record<string, string>
+	partition: number | null
+	offset: number | null
+	key: string | null
+	payload: Record<string, unknown>
 }
 
 /**
@@ -18,133 +18,145 @@ export interface ParsedKafkaLog {
  *
  * Format 3 (key: JSON):
  * mykey: {"json": "payload"}
+ *
+ * Format 4 (Java log with embedded JSON):
+ * 2026-02-24 09:54:35.380Z INFO [com.example.Class] ... - Payload {"json": "payload"}
  */
 export function parseKafkaLog(input: string): ParsedKafkaLog | null {
-  const trimmed = input.trim()
+	const trimmed = input.trim()
 
-  // Try to parse as plain JSON first
-  if (trimmed.startsWith("{")) {
-    try {
-      const payload = JSON.parse(trimmed)
-      return {
-        timestamp: null,
-        headers: {},
-        partition: null,
-        offset: null,
-        key: null,
-        payload,
-      }
-    } catch {
-      // Not valid JSON, continue with other formats
-    }
-  }
+	const result: ParsedKafkaLog = {
+		timestamp: null,
+		headers: {},
+		partition: null,
+		offset: null,
+		key: null,
+		payload: {},
+	}
 
-  // Try to parse full Kafka log format
-  const result: ParsedKafkaLog = {
-    timestamp: null,
-    headers: {},
-    partition: null,
-    offset: null,
-    key: null,
-    payload: {},
-  }
+	// Try to parse as plain JSON first
+	if (trimmed.startsWith("{")) {
+		try {
+			const payload = JSON.parse(trimmed)
+			return {
+				timestamp: null,
+				headers: {},
+				partition: null,
+				offset: null,
+				key: null,
+				payload,
+			}
+		} catch {
+			// Not valid JSON, continue with other formats
+		}
+	}
 
-  let remaining = trimmed
+	// Try Java log format with "Payload" marker - only if line doesn't start with Timestamp
+	if (!trimmed.toLowerCase().startsWith("timestamp:")) {
+		const javaPayloadMatch = trimmed.match(/[-–—]\s*Payload\s*(\{[\s\S]*)$/)
+		if (javaPayloadMatch) {
+			try {
+				result.payload = JSON.parse(javaPayloadMatch[1])
+				return result
+			} catch {
+				// Continue with other formats
+			}
+		}
+	}
 
-  // Extract timestamp
-  const timestampMatch = remaining.match(/^Timestamp:\s*(\d+)\s*/i)
-  if (timestampMatch) {
-    result.timestamp = parseInt(timestampMatch[1])
-    remaining = remaining.slice(timestampMatch[0].length)
-  }
+	// Parse full Kafka log format
+	let remaining = trimmed
 
-  // Extract headers
-  const headerMatch = remaining.match(/^Header\s+([^\[]+)\s*/)
-  if (headerMatch) {
-    const headerString = headerMatch[1].trim()
-    // Parse headers: key1=val1,key2=val2
-    const headerPairs = headerString.split(",")
-    for (const pair of headerPairs) {
-      const eqIndex = pair.indexOf("=")
-      if (eqIndex > 0) {
-        const key = pair.slice(0, eqIndex).trim()
-        const value = pair.slice(eqIndex + 1).trim()
-        result.headers[key] = value
-      }
-    }
-    remaining = remaining.slice(headerMatch[0].length)
-  }
+	// Extract timestamp (Timestamp: or timestamp:)
+	const timestampMatch = remaining.match(/^Timestamp:\s*(\d+)\s*/i)
+	if (timestampMatch) {
+		result.timestamp = parseInt(timestampMatch[1])
+		remaining = remaining.slice(timestampMatch[0].length)
+	}
 
-  // Extract partition [n]
-  const partitionMatch = remaining.match(/^\[(\d+)\]\s*/)
-  if (partitionMatch) {
-    result.partition = parseInt(partitionMatch[1])
-    remaining = remaining.slice(partitionMatch[0].length)
-  }
+	// Extract headers
+	const headerMatch = remaining.match(/^Header\s+([^\[]+)\s*/)
+	if (headerMatch) {
+		const headerString = headerMatch[1].trim()
+		const headerPairs = headerString.split(",")
+		for (const pair of headerPairs) {
+			const eqIndex = pair.indexOf("=")
+			if (eqIndex > 0) {
+				const key = pair.slice(0, eqIndex).trim()
+				const value = pair.slice(eqIndex + 1).trim()
+				result.headers[key] = value
+			}
+		}
+		remaining = remaining.slice(headerMatch[0].length)
+	}
 
-  // Extract offset
-  const offsetMatch = remaining.match(/^at\s+offset\s+(\d+):\s*/i)
-  if (offsetMatch) {
-    result.offset = parseInt(offsetMatch[1])
-    remaining = remaining.slice(offsetMatch[0].length)
-  }
+	// Extract partition [n]
+	const partitionMatch = remaining.match(/^\[(\d+)\]\s*/)
+	if (partitionMatch) {
+		result.partition = parseInt(partitionMatch[1])
+		remaining = remaining.slice(partitionMatch[0].length)
+	}
 
-  // Extract key (everything before the JSON)
-  const keyJsonMatch = remaining.match(/^key\s+([^{]+):\s*(\{.*)$/s)
-  if (keyJsonMatch) {
-    result.key = keyJsonMatch[1].trim()
-    remaining = keyJsonMatch[2]
-  } else {
-    // Maybe just "key: {json}" format
-    const simpleKeyMatch = remaining.match(/^([^{]+):\s*(\{.*)$/s)
-    if (simpleKeyMatch) {
-      result.key = simpleKeyMatch[1].trim()
-      remaining = simpleKeyMatch[2]
-    }
-  }
+	// Extract offset
+	const offsetMatch = remaining.match(/^at\s+offset\s*(\d+):\s*/i)
+	if (offsetMatch) {
+		result.offset = parseInt(offsetMatch[1])
+		remaining = remaining.slice(offsetMatch[0].length)
+	}
 
-  // Parse the JSON payload
-  try {
-    // Find the JSON part - it should start with { and we need to find the matching }
-    const jsonStart = remaining.indexOf("{")
-    if (jsonStart >= 0) {
-      const jsonString = remaining.slice(jsonStart)
-      result.payload = JSON.parse(jsonString)
-      return result
-    }
-  } catch (e) {
-    // Try to extract just the JSON part more aggressively
-    const jsonMatch = remaining.match(/(\{[\s\S]*\})\s*$/)
-    if (jsonMatch) {
-      try {
-        result.payload = JSON.parse(jsonMatch[1])
-        return result
-      } catch {
-        return null
-      }
-    }
-    return null
-  }
+	// Extract key (everything before the JSON)
+	const keyJsonMatch = remaining.match(/^key\s+([^{]+):\s*(\{.*)$/s)
+	if (keyJsonMatch) {
+		result.key = keyJsonMatch[1].trim()
+		remaining = keyJsonMatch[2]
+	} else {
+		const simpleKeyMatch = remaining.match(/^([^{]+):\s*(\{.*)$/s)
+		if (simpleKeyMatch) {
+			result.key = simpleKeyMatch[1].trim()
+			remaining = simpleKeyMatch[2]
+		}
+	}
 
-  return Object.keys(result.payload).length > 0 ? result : null
+	// Parse the JSON payload
+	try {
+		const jsonStart = remaining.indexOf("{")
+		if (jsonStart >= 0) {
+			const jsonString = remaining.slice(jsonStart)
+			result.payload = JSON.parse(jsonString)
+			return result
+		}
+	} catch (e) {
+		const jsonMatch = remaining.match(/(\{[\s\S]*\})\s*$/)
+		if (jsonMatch) {
+			try {
+				result.payload = JSON.parse(jsonMatch[1])
+				return result
+			} catch {
+				return null
+			}
+		}
+		return null
+	}
+
+	return Object.keys(result.payload).length > 0 ? result : null
 }
 
 /**
  * Format headers for display
  */
 export function formatHeaders(headers: Record<string, string>): string[] {
-  return Object.entries(headers).map(([key, value]) => {
-    const displayValue = value.length > 40 ? value.slice(0, 40) + "..." : value
-    return `${key}: ${displayValue}`
-  })
+	return Object.entries(headers).map(([key, value]) => {
+		const displayValue = value.length > 40 ? value.slice(0, 40) + "..." : value
+		return `${key}: ${displayValue}`
+	})
 }
 
 /**
  * Convert headers object to Kafka message headers format
  */
 export function headersToKafkaFormat(headers: Record<string, string>): { key: string; value: Buffer }[] {
-  return Object.entries(headers).map(([key, value]) => ({
-    key,
-    value: Buffer.from(value),
-  }))
+	return Object.entries(headers).map(([key, value]) => ({
+		key,
+		value: Buffer.from(value),
+	}))
 }
